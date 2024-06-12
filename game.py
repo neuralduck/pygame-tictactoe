@@ -28,6 +28,17 @@ class Game:
 		(300.0, 500.0): 7,
 		(500.0, 500.0): 8,
 		}
+		self.board2grid = {
+		0: (100.0, 100.0),
+		1: (300.0, 100.0),
+		2: (500.0, 100.0),
+		3: (100.0, 300.0),
+		4: (300.0, 300.0),
+		5: (500.0, 300.0),
+		6: (100.0, 500.0),
+		7: (300.0, 500.0),
+		8: (500.0, 500.0),
+		}
 		for row in range(width):
 			for col in range(row%2, width, 2):
 				pg.draw.rect(self.surface, bg_color2, (row*tile_size, col*tile_size, tile_size, tile_size))
@@ -46,16 +57,25 @@ class Game:
 	def play(self):
 		board = Tictactoe()
 		while True:
-			result = board.check()
+			result, squares = board.check(index = True)
 			for event in pg.event.get():
 				if event.type == pg.QUIT:
 					pg.quit()
 					sys.exit()
-				
-				if result == 1:
+				if not(self.game_over) and (result == 1):
 					print('x wins')
-				elif result == -1:
+					print(squares)
+					start = self.board2grid[squares[0]]
+					end = self.board2grid[squares[-1]]
+					pg.draw.line(self.surface, (0, 0, 255), start, end, width = 15)
+					self.game_over = True
+				elif not(self.game_over) and (result == -1):
 					print('o wins')
+					print(squares)
+					start = self.board2grid[squares[0]]
+					end = self.board2grid[squares[-1]]
+					pg.draw.line(self.surface, (0, 0, 255), start, end, width = 15)
+					self.game_over = True
 				elif result == 3:
 					if event.type == pg.MOUSEBUTTONUP:
 						pos = pg.mouse.get_pos()

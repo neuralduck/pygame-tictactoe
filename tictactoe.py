@@ -27,7 +27,7 @@ class Tictactoe:
     def available_moves(self): 
         return list(set(range(9)) - set(self.history))
 
-    def check(self):
+    def check(self, index = False):
         #  1: player 1 wins | -1: player 2 wins | 3: game not completed | 0: draw
         win = lambda a, b, c: 1 if a + b + c == 3 else -1 if a + b + c == -3 else None
         combinations = [(0, 1, 2), (3, 4, 5), (6, 7, 8),
@@ -37,9 +37,15 @@ class Tictactoe:
             for a, b, c in combinations:
                 result = win(self.board[a], self.board[b], self.board[c])
                 if result is not None:
+                    if index:
+                        return (result, (a, b, c))
                     return result
             if self.n_moves == 9:
+                if index:
+                    return (0, None)
                 return 0
+        if index:
+            return (3, None)
         return 3
 
     def move(self, choice, mark):
@@ -47,7 +53,7 @@ class Tictactoe:
         assert(choice in range(9))
         self.history.append(choice)
         self.n_moves += 1
-        self.board[choice] = mark
+        self.board[choice] = mark ## 1 or -1
 
 
 
