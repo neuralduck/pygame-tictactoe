@@ -10,8 +10,10 @@ O_color = (119, 3, 179, 0.76)
 class Game:
 	def __init__(self):
 		pg.init()
-		self.surface = pg.display.set_mode((width, height))
+		self.surface = pg.display.set_mode((width, height), pg.SRCALPHA)
+		pg.display.set_caption('Tic tac toe')
 		self.surface.fill(bg_color1)
+		self.font = pg.font.SysFont('Arial', 100)
 		self.game_over = False
 		self.move_history = []
 		self.turn = 1
@@ -28,21 +30,27 @@ class Game:
 		(300.0, 500.0): 7,
 		(500.0, 500.0): 8,
 		}
-		self.board2grid = {
-		0: (100.0, 100.0),
-		1: (300.0, 100.0),
-		2: (500.0, 100.0),
-		3: (100.0, 300.0),
-		4: (300.0, 300.0),
-		5: (500.0, 300.0),
-		6: (100.0, 500.0),
-		7: (300.0, 500.0),
-		8: (500.0, 500.0),
+		self.win_lines = {
+		(0, 1, 2): ((0, 100), (600, 100)),
+		(3, 4, 5): ((0, 300), (600, 300)),
+		(6, 7, 8): ((0, 500), (600, 500)),
+		(0, 3, 6): ((100, 0), (100, 600)),
+		(1, 4, 7): ((300, 0), (300, 600)),
+		(2, 5, 8): ((500, 0), (500, 600)),
+		(0, 4, 8): ((0, 0), (600, 600)),
+		(2, 4, 6): ((600, 0), (0, 600))
 		}
 		for row in range(width):
 			for col in range(row%2, width, 2):
 				pg.draw.rect(self.surface, bg_color2, (row*tile_size, col*tile_size, tile_size, tile_size))
+		pg.draw.line(self.surface, 'black', (200, 0), (200, height), 3)
+		pg.draw.line(self.surface, 'black', (400, 0), (400, height), 3)
+		pg.draw.line(self.surface, 'black', (0, 200), (width, 200), 3)
+		pg.draw.line(self.surface, 'black', (0, 400), (width, 400), 3)
 
+	def draw_text(self, text, x = 200, y = 200, text_col = 'black'):
+		img = self.font.render(text, True, text_col)
+		self.surface.blit(img, (x, y))
 	def mark_square(self, pos, player):
 		if player == -1:
 			pg.draw.circle(self.surface, O_color, pos, 80, width = 15)
@@ -65,16 +73,21 @@ class Game:
 				if not(self.game_over) and (result == 1):
 					print('x wins')
 					print(squares)
-					start = self.board2grid[squares[0]]
-					end = self.board2grid[squares[-1]]
-					pg.draw.line(self.surface, (0, 0, 255), start, end, width = 15)
+					start, end = self.win_lines[squares]
+					pg.draw.line(self.surface, (0, 0, 255), start, end, width = 10)
+					#self.draw_text('X Wins')
 					self.game_over = True
 				elif not(self.game_over) and (result == -1):
 					print('o wins')
 					print(squares)
-					start = self.board2grid[squares[0]]
-					end = self.board2grid[squares[-1]]
-					pg.draw.line(self.surface, (0, 0, 255), start, end, width = 15)
+					start, end = self.win_lines[squares]
+					pg.draw.line(self.surface, (0, 0, 255), start, end, width = 10)
+					self.surface.set_alpha(255)
+					#self.draw_text('O wins')
+					self.game_over = True
+				elif not(self.game_over) and (result == 0):
+					print('draw')
+					self.draw_text('Draw')
 					self.game_over = True
 				elif result == 3:
 					if event.type == pg.MOUSEBUTTONUP:
