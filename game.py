@@ -66,18 +66,15 @@ class Game:
 		board = Tictactoe()
 		while True:
 			result, squares = board.check(index = True)
-			for event in pg.event.get():
-				if event.type == pg.QUIT:
-					pg.quit()
-					sys.exit()
-				if not(self.game_over) and (result == 1):
-					print('x wins')
-					print(squares)
-					start, end = self.win_lines[squares]
-					pg.draw.line(self.surface, (0, 0, 255), start, end, width = 10)
-					#self.draw_text('X Wins')
-					self.game_over = True
-				elif not(self.game_over) and (result == -1):
+			if not(self.game_over):
+				if (result == 1):
+						print('x wins')
+						print(squares)
+						start, end = self.win_lines[squares]
+						pg.draw.line(self.surface, (0, 0, 255), start, end, width = 10)
+						#self.draw_text('X Wins')
+						self.game_over = True
+				elif (result == -1):
 					print('o wins')
 					print(squares)
 					start, end = self.win_lines[squares]
@@ -85,24 +82,27 @@ class Game:
 					self.surface.set_alpha(255)
 					#self.draw_text('O wins')
 					self.game_over = True
-				elif not(self.game_over) and (result == 0):
+				elif(result == 0):
 					print('draw')
 					self.draw_text('Draw')
 					self.game_over = True
-				elif result == 3:
-					if event.type == pg.MOUSEBUTTONUP:
-						pos = pg.mouse.get_pos()
-						x = (tile_size * (pos[0] // tile_size)) + (tile_size/2)
-						y = (tile_size * (pos[1] // tile_size)) + (tile_size/2)
-						if (x, y) not in self.move_history:
-							self.move_history.append((x, y))
-							if self.turn:
-								self.mark_square((x, y), player = 1)
-								board.move(self.grid2board[(x, y)], 1)
-							else:
-								self.mark_square((x, y), player = -1)
-								board.move(self.grid2board[(x, y)], -1)
-							self.turn = int(not(self.turn))
+			for event in pg.event.get():
+				if event.type == pg.QUIT:
+					pg.quit()
+					sys.exit()
+				if (event.type == pg.MOUSEBUTTONUP) and not(self.game_over):
+					pos = pg.mouse.get_pos()
+					x = (tile_size * (pos[0] // tile_size)) + (tile_size/2)
+					y = (tile_size * (pos[1] // tile_size)) + (tile_size/2)
+					if (x, y) not in self.move_history:
+						self.move_history.append((x, y))
+						if self.turn:
+							self.mark_square((x, y), player = 1)
+							board.move(self.grid2board[(x, y)], 1)
+						else:
+							self.mark_square((x, y), player = -1)
+							board.move(self.grid2board[(x, y)], -1)
+						self.turn = int(not(self.turn))
 			pg.display.update()
 
 
